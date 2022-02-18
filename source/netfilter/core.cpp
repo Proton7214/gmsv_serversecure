@@ -439,7 +439,7 @@ public:
 
   void SetInfoCacheTime(const uint32_t time) { info_cache_time = time; }
 
-  bool PopPacketFromSamplingQueue(packet_t& p) { return false; }
+  bool PopPacketFromSamplingQueue(packet_t &p) { return false; }
 
   ClientManager &GetClientManager() { return client_manager; }
 
@@ -689,21 +689,21 @@ private:
       server_lua->Pop(1);
       server_lua->GetField(-1, "tags");
       {
-          server_lua->GetField(-1, "gm");
-          setup.tags.gm = server_lua->GetString(-1);
-          server_lua->Pop(1);
-          server_lua->GetField(-1, "gmws");
-          setup.tags.gmws = server_lua->GetString(-1);
-          server_lua->Pop(1);
-          server_lua->GetField(-1, "gmc");
-          setup.tags.gmc = server_lua->GetString(-1);
-          server_lua->Pop(1);
-          server_lua->GetField(-1, "loc");
-          setup.tags.loc = server_lua->GetString(-1);
-          server_lua->Pop(1);
-          server_lua->GetField(-1, "ver");
-          setup.tags.ver = server_lua->GetString(-1);
-          server_lua->Pop(1);
+        server_lua->GetField(-1, "gm");
+        setup.tags.gm = server_lua->GetString(-1);
+        server_lua->Pop(1);
+        server_lua->GetField(-1, "gmws");
+        setup.tags.gmws = server_lua->GetString(-1);
+        server_lua->Pop(1);
+        server_lua->GetField(-1, "gmc");
+        setup.tags.gmc = server_lua->GetString(-1);
+        server_lua->Pop(1);
+        server_lua->GetField(-1, "loc");
+        setup.tags.loc = server_lua->GetString(-1);
+        server_lua->Pop(1);
+        server_lua->GetField(-1, "ver");
+        setup.tags.ver = server_lua->GetString(-1);
+        server_lua->Pop(1);
       }
       server_lua->Pop(1);
     }
