@@ -439,7 +439,7 @@ public:
 
   void SetInfoCacheTime(const uint32_t time) { info_cache_time = time; }
 
-  bool PopPacketFromSamplingQueue(packet_t &p) {}
+  bool PopPacketFromSamplingQueue(packet_t& p) { return false; }
 
   ClientManager &GetClientManager() { return client_manager; }
 
@@ -556,7 +556,6 @@ private:
     if (server_lua->Top() > 0)
       return reply_info;
 
-    auto server_interface = (GarrysMod::Lua::ILuaInterface *)server_lua;
     char hook[] = "A2S_INFO";
 
     int32_t funcs = LuaHelpers::PushHookRun(server_lua, hook);
@@ -597,6 +596,18 @@ private:
     server_lua->SetField(-2, "port");
     server_lua->PushNumber(reply_info.appid);
     server_lua->SetField(-2, "appid");
+    server_lua->CreateTable();
+    server_lua->PushString(reply_info.tags.gm.c_str());
+    server_lua->SetField(-2, "gm");
+    server_lua->PushString(reply_info.tags.gmws.c_str());
+    server_lua->SetField(-2, "gmws");
+    server_lua->PushString(reply_info.tags.gmc.c_str());
+    server_lua->SetField(-2, "gmc");
+    server_lua->PushString(reply_info.tags.loc.c_str());
+    server_lua->SetField(-2, "loc");
+    server_lua->PushString(reply_info.tags.ver.c_str());
+    server_lua->SetField(-2, "ver");
+    server_lua->SetField(-2, "tags");
 
     std::string steamid = std::to_string(reply_info.steamid);
     server_lua->PushString(steamid.c_str());
@@ -676,6 +687,25 @@ private:
       server_lua->GetField(-1, "steamid");
       setup.steamid = strtoll(server_lua->GetString(-1), 0, 10);
       server_lua->Pop(1);
+      server_lua->GetField(-1, "tags");
+      {
+          server_lua->GetField(-1, "gm");
+          setup.tags.gm = server_lua->GetString(-1);
+          server_lua->Pop(1);
+          server_lua->GetField(-1, "gmws");
+          setup.tags.gmws = server_lua->GetString(-1);
+          server_lua->Pop(1);
+          server_lua->GetField(-1, "gmc");
+          setup.tags.gmc = server_lua->GetString(-1);
+          server_lua->Pop(1);
+          server_lua->GetField(-1, "loc");
+          setup.tags.loc = server_lua->GetString(-1);
+          server_lua->Pop(1);
+          server_lua->GetField(-1, "ver");
+          setup.tags.ver = server_lua->GetString(-1);
+          server_lua->Pop(1);
+      }
+      server_lua->Pop(1);
     }
 
     server_lua->Pop(1);
@@ -684,7 +714,6 @@ private:
   }
 
   reply_player_t CallPlayerHook(const sockaddr_in &from) {
-    auto server_interface = (GarrysMod::Lua::ILuaInterface *)server_lua;
     char hook[] = "A2S_PLAYER";
 
     reply_player_t players;
@@ -732,9 +761,10 @@ private:
         server_lua->Pop(1);
         server_lua->GetField(-1, "time");
         player.time = server_lua->GetNumber(-1);
-        server_lua->Pop(2);
+        server_lua->Pop(1);
 
         list.at(i) = player;
+        server_lua->Pop(1);
       }
 
       players.players = list;
@@ -928,7 +958,7 @@ private:
 
     const ssize_t len = trampoline(s, buf, buflen, flags, from, fromlen);
     DevMsg(
-        "[ServerSecure] Called recvfrom on socket %d and received %d bytes\n",
+        "[ServerSecure] Called recvfrom on socket %d and received %ld bytes\n",
         s, len);
     if (len == -1) {
       return -1;
