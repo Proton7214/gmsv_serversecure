@@ -79,6 +79,20 @@ static const SOCKET INVALID_SOCKET = -1;
 
 #endif
 
+#if defined SYSTEM_WINDOWS
+
+static constexpr char operating_system_char = 'w';
+
+#elif defined SYSTEM_POSIX
+
+static constexpr char operating_system_char = 'l';
+
+#elif defined SYSTEM_MACOSX
+
+static constexpr char operating_system_char = 'm';
+
+#endif
+
 struct netsocket_t {
   int32_t nPort;
   bool bListening;
@@ -104,8 +118,8 @@ struct reply_info_t {
   int32_t current_clients = 0;
   int32_t max_clients = 0;
   int32_t fake_clients = 0;
-  char server_type;
-  char os_type;
+  char server_type = 'd';
+  char os_type = operating_system_char;
   bool password;
   bool secure;
   int32_t udp_port = 0;
@@ -355,24 +369,21 @@ public:
     info_cache_packet.WriteString(info.map_name.c_str());
     info_cache_packet.WriteString(info.game_dir.c_str());
     info_cache_packet.WriteString(info.game_name.c_str());
-
     info_cache_packet.WriteShort(info.appid);
-
     info_cache_packet.WriteByte(info.current_clients);
     info_cache_packet.WriteByte(info.max_clients);
     info_cache_packet.WriteByte(info.fake_clients);
     info_cache_packet.WriteByte(info.server_type);
     info_cache_packet.WriteByte(info.os_type);
-    info_cache_packet.WriteByte(info.password);
-
-    info_cache_packet.WriteByte(info.secure);
+    info_cache_packet.WriteByte(info.password ? 1 : 0);
+    info_cache_packet.WriteByte(static_cast<int>(info.secure));
     info_cache_packet.WriteString(info.game_version.c_str());
 
     const std::string tags = ConcatenateTags(info.tags);
     const bool notags = tags.empty();
-    info_cache_packet.WriteByte(0x80 | 0x110 | (notags ? 0x00 : 0x20) | 0x01);
+    info_cache_packet.WriteByte(0x80 | 0x10 | (notags ? 0x00 : 0x20) | 0x01);
     info_cache_packet.WriteShort(info.udp_port);
-    info_cache_packet.WriteLongLong(info.steamid);
+    info_cache_packet.WriteLongLong(static_cast<int64_t>(info.steamid));
 
     if (!notags)
       info_cache_packet.WriteString(tags.c_str());
@@ -451,19 +462,6 @@ private:
   using recvfrom_t = ssize_t(SERVERSECURE_CALLING_CONVENTION *)(
       SOCKET, void *, recvlen_t, int32_t, sockaddr *, socklen_t *);
 
-#if defined SYSTEM_WINDOWS
-
-  static constexpr char operating_system_char = 'w';
-
-#elif defined SYSTEM_POSIX
-
-  static constexpr char operating_system_char = 'l';
-
-#elif defined SYSTEM_MACOSX
-
-  static constexpr char operating_system_char = 'm';
-
-#endif
   static constexpr std::string_view default_game_version = "2020.10.14";
   static constexpr uint8_t default_proto_version = 17;
 
