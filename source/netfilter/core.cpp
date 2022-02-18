@@ -960,9 +960,7 @@ private:
   static ssize_t SERVERSECURE_CALLING_CONVENTION
   recvfrom_detour(SOCKET s, void *buf, recvlen_t buflen, int32_t flags,
                   sockaddr *from, socklen_t *fromlen) {
-      auto Proc = Core::Singleton->ReceiveAndAnalyzePacket(s, buf, buflen, flags, from, fromlen);
-
-      return HandleNetError(Proc);
+      return HandleNetError(Core::Singleton->ReceiveAndAnalyzePacket(s, buf, buflen, flags, from, fromlen));
   }
 };
 
