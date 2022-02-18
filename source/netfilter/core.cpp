@@ -205,9 +205,7 @@ public:
     BuildStaticReplyInfo(game_version);
   }
 
-  ~Core() {
-    recvfrom_hook.Disable();
-  }
+  ~Core() { recvfrom_hook.Disable(); }
 
   Core(const Core &) = delete;
   Core(Core &&) = delete;
@@ -336,9 +334,9 @@ public:
       reply_info.secure = gameserver->BSecure();
 
     if (sv_location != nullptr)
-        reply_info.tags.loc = sv_location->GetString();
+      reply_info.tags.loc = sv_location->GetString();
     else
-        reply_info.tags.loc.clear();
+      reply_info.tags.loc.clear();
 
     const CSteamID *steamid = engine_server->GetGameServerSteamID();
 
@@ -441,8 +439,7 @@ public:
 
   void SetInfoCacheTime(const uint32_t time) { info_cache_time = time; }
 
-  bool PopPacketFromSamplingQueue(packet_t &p) {
-  }
+  bool PopPacketFromSamplingQueue(packet_t &p) {}
 
   ClientManager &GetClientManager() { return client_manager; }
 
@@ -565,7 +562,7 @@ private:
     int32_t funcs = LuaHelpers::PushHookRun(server_lua, hook);
 
     if (funcs == 0)
-        return reply_info;
+      return reply_info;
 
     server_lua->PushString(IPToString(from.sin_addr));
     server_lua->PushNumber(from.sin_port);
@@ -700,7 +697,7 @@ private:
     int32_t funcs = LuaHelpers::PushHookRun(server_lua, hook);
 
     if (funcs == 0)
-        return players;
+      return players;
 
     server_lua->PushString(IPToString(from.sin_addr));
     server_lua->PushNumber(from.sin_port);
@@ -891,7 +888,8 @@ private:
       return PacketType::Invalid;
     }
 
-    return type == 'T' ? PacketType::Info : (type == 'U' ? PacketType::Player : PacketType::Good);
+    return type == 'T' ? PacketType::Info
+                       : (type == 'U' ? PacketType::Player : PacketType::Good);
   }
 
   bool IsAddressAllowed(const sockaddr_in &addr) {
@@ -956,11 +954,12 @@ private:
 
     return type != PacketType::Invalid ? len : -1;
   }
- 
+
   static ssize_t SERVERSECURE_CALLING_CONVENTION
   recvfrom_detour(SOCKET s, void *buf, recvlen_t buflen, int32_t flags,
                   sockaddr *from, socklen_t *fromlen) {
-      return HandleNetError(Core::Singleton->ReceiveAndAnalyzePacket(s, buf, buflen, flags, from, fromlen));
+    return HandleNetError(Core::Singleton->ReceiveAndAnalyzePacket(
+        s, buf, buflen, flags, from, fromlen));
   }
 };
 
