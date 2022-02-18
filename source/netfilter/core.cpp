@@ -735,8 +735,7 @@ private:
         server_lua->Pop(1);
         server_lua->GetField(-1, "time");
         player.time = server_lua->GetNumber(-1);
-        server_lua->Pop(1);
-        server_lua->Pop(1);
+        server_lua->Pop(2);
 
         list.at(i) = player;
       }
@@ -892,7 +891,7 @@ private:
       return PacketType::Invalid;
     }
 
-    return type == 'T' ? PacketType::Info : PacketType::Good;
+    return type == 'T' ? PacketType::Info : (type == 'D' ? PacketType::Player : PacketType::Good);
   }
 
   bool IsAddressAllowed(const sockaddr_in &addr) {
