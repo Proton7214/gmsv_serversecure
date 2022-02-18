@@ -891,7 +891,7 @@ private:
       return PacketType::Invalid;
     }
 
-    return type == 'T' ? PacketType::Info : (type == 'D' ? PacketType::Player : PacketType::Good);
+    return type == 'T' ? PacketType::Info : (type == 'U' ? PacketType::Player : PacketType::Good);
   }
 
   bool IsAddressAllowed(const sockaddr_in &addr) {
