@@ -491,7 +491,8 @@ namespace netfilter
 
 			reply_info_t info = reply_info;
 
-			LuaHelpers::CallHookRun(lua, 3, 1);
+			if (!LuaHelpers::CallHookRun(lua, 3, 1))
+				return info;
 
 			if (lua->IsType(-1, GarrysMod::Lua::Type::Bool))
 			{
@@ -540,7 +541,8 @@ namespace netfilter
 			lua->PushString(IPToString(from.sin_addr));
 			lua->PushNumber(from.sin_port);
 
-			LuaHelpers::CallHookRun(lua, 2, 1);
+			if (!LuaHelpers::CallHookRun(lua, 2, 1))
+				return players;
 
 			if (lua->IsType(-1, GarrysMod::Lua::Type::Bool))
 			{
@@ -565,7 +567,7 @@ namespace netfilter
 					lua->PushNumber(position + 1);
 					lua->GetTable(-2);
 					{
-						LuaGetNumber(player.index, "index", int);
+						LuaGetNumber(player.index, "index", byte);
 						LuaGetString(player.name, "name");
 						LuaGetNumber(player.score, "score", long);
 						LuaGetNumber(player.time, "time", float);
